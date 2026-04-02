@@ -2,11 +2,51 @@ import streamlit as st
 import requests
 import pandas as pd
 
+# البيانات الخاصة بك
+TOKEN = st.secrets["token_id"]  
+SECRET = st.secrets["secret"]
+
+USERNAME = st.secrets["username"]
+PASSWORD = st.secrets["password"]
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+
+def show_login_page():
+    st.title("RingRx Bot Login")
+    st.write("Please login to access the fax sender.")
+
+    with st.form("login_form"):
+        entered_username = st.text_input("Username")
+        entered_password = st.text_input("Password", type="password")
+        login_submitted = st.form_submit_button("Login")
+
+    if login_submitted:
+        if entered_username == USERNAME and entered_password == PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Invalid username or password")
+
+
+if not st.session_state.authenticated:
+    show_login_page()
+    st.stop()
+
 st.title("RingRx Bot")
+
+if st.button("Logout"):
+    st.session_state.authenticated = False
+    st.rerun()
 
     # البيانات التي سيتم إرسالها
 fax_data = {}
 # make it require user input
+# MAKE A LOGIN PAGE FIRST THEN SHOW THE FAX SENDER PAGE
+
+
+
 
 company_name = st.text_input("Company Name", key="company_name" , value="Healthy All Time Nutrition")
 contact_number = st.text_input("Contact Number *", key="contact_number")
@@ -31,14 +71,10 @@ if all_numbers_file is not None:
 def get_access_token():
     url = "https://portal.ringrx.com/auth/token"
 
-    # البيانات الخاصة بك
-    token_id = "dalnatsheh_iejiX1WEska7gzG7iuuX"
-    secret = "OPmZFCb3WdDPRPAdQTC5Pth0AOooREJO"
-
     # الطريقة الصحيحة هي POST مع إرسال البيانات
     payload = {
-        "token": token_id,
-        "secret": secret
+        "token": TOKEN,
+        "secret": SECRET
     }
 
     headers = {
